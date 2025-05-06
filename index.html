@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Game with Betting</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        input { margin: 10px; padding: 8px; width: 100px; }
+        #balance { font-size: 20px; margin-bottom: 20px; }
+        #result { font-size: 22px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Prediction Game with Betting</h1>
+    <div id="balance">Balance: ₹5000</div>
+
+    <h3>Enter Bet Amount (₹10 - ₹1000)</h3>
+    <input type="number" id="betAmount" value="10" min="10" max="1000">
+
+    <h2>Pick Color</h2>
+    <button onclick="playColor('red')">Red</button>
+    <button onclick="playColor('green')">Green</button>
+    <button onclick="playColor('violet')">Violet</button>
+
+    <h2>Pick Big / Small</h2>
+    <button onclick="playBigSmall('big')">Big (51-100)</button>
+    <button onclick="playBigSmall('small')">Small (1-50)</button>
+
+    <div id="result"></div>
+
+    <script>
+        let balance = 5000;
+
+        function updateBalance() {
+            document.getElementById('balance').innerText = `Balance: ₹${balance}`;
+        }
+
+        function getBetAmount() {
+            const betInput = document.getElementById('betAmount');
+            let bet = parseInt(betInput.value);
+            if (isNaN(bet)) bet = 10;
+            if (bet < 10) bet = 10;
+            if (bet > 1000) bet = 1000;
+            if (bet > balance) bet = balance;
+            betInput.value = bet;
+            return bet;
+        }
+
+        function playColor(choice) {
+            const bet = getBetAmount();
+            if (balance < bet) {
+                document.getElementById('result').innerText = "Not enough balance!";
+                return;
+            }
+            const colors = ['red', 'green', 'violet'];
+            const random = colors[Math.floor(Math.random() * colors.length)];
+            if (choice === random) {
+                balance += bet;
+                document.getElementById('result').innerText = `You WON! It was ${random}. You won ₹${bet}`;
+            } else {
+                balance -= bet;
+                document.getElementById('result').innerText = `You LOST! It was ${random}. You lost ₹${bet}`;
+            }
+            updateBalance();
+            checkGameOver();
+        }
+
+        function playBigSmall(choice) {
+            const bet = getBetAmount();
+            if (balance < bet) {
+                document.getElementById('result').innerText = "Not enough balance!";
+                return;
+            }
+            const randomNum = Math.floor(Math.random() * 100) + 1;
+            const result = randomNum <= 50 ? 'small' : 'big';
+            if (choice === result) {
+                balance += bet;
+                document.getElementById('result').innerText = `You WON! Number: ${randomNum} (${result}). You won ₹${bet}`;
+            } else {
+                balance -= bet;
+                document.getElementById('result').innerText = `You LOST! Number: ${randomNum} (${result}). You lost ₹${bet}`;
+            }
+            updateBalance();
+            checkGameOver();
+        }
+
+        function checkGameOver() {
+            if (balance <= 0) {
+                document.getElementById('result').innerText = "Game Over! Balance ₹0.";
+                balance = 0;
+                updateBalance();
+            }
+        }
+
+        updateBalance();
+    </script>
+</body>
+</html>
